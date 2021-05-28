@@ -19,6 +19,7 @@ namespace AnkaKafe.UI
         {
             OrnekUrunleriEkle(); // ileride kaldırılacak
             InitializeComponent();
+            Icon = Resource.AnkaKafe;
             masalarImageList.Images.Add("bos", Resource.bos);
             masalarImageList.Images.Add("dolu", Resource.dolu);
             MasalariOlustur();
@@ -71,12 +72,34 @@ namespace AnkaKafe.UI
 
             // Bu siparişi başka bir formda aç
             SiparisForm siparisForm = new SiparisForm(db, siparis);
+
+            // EVENT OLUŞTURMADA 5. ADIM: Event'e oluşturulan metotu atamak
+            siparisForm.MasaTasindi += SiparisForm_MasaTasindi;
+
             siparisForm.ShowDialog();
 
             // Sipariş formu kapandıktan sonra sipariş durumunu kontrol et
             if (siparis.Durum != SiparisDurum.Aktif)
             {
                 lvi.ImageKey = "bos";
+            }
+        }
+
+        // EVENT OLUŞTURMADA 4. ADIM: Event'e atanacak metotu 
+        // event delegesinin dönüş tipi ve argüman çeşitlerine uygun olarak oluşturmak
+        private void SiparisForm_MasaTasindi(object sender, MasaTasindiEventArgs e)
+        {
+            foreach (ListViewItem lvi in lvwMasalar.Items)
+            {
+                int masaNo = (int)lvi.Tag;
+                if (masaNo == e.EskiMasaNo)
+                {
+                    lvi.ImageKey = "bos";
+                }
+                else if (masaNo == e.YeniMasaNo)
+                {
+                    lvi.ImageKey = "dolu";
+                }
             }
         }
 
